@@ -1,0 +1,6 @@
+Ocr using Textract here
+in future may include google, amazon and azure APIS and other offline solutions here
+
+limiting package to OCRs and 
+    reformatting OCRs
+    pre_postprocessing of the OCRSS
