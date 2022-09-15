@@ -1,7 +1,11 @@
+from curses.textpad import rectangle
+from email.mime import image
 from genericpath import exists
 import os
 from ocr_module import tesseract
 from pdf2image import convert_from_path
+from PIL import Image, ImageDraw, ImageFont
+# from fuzzywuzzy import fuzz
 
 
 class document_searcher():
@@ -28,16 +32,50 @@ class document_searcher():
         tess_obj = tesseract()
         images_path = self.pdf_to_images(pdf_path)
 
-        output_dict = tess_obj.get_ocr(images_path)
-        print(tess_obj.pdf_ocr_dict)
-        # print("tess dict" , output_dict)
+        output_df = tess_obj.get_ocr(images_path)
+        return output_df
+
+    def find_word(self, in_words,df):
+        word_row = df.loc[df["text"].isin([in_words])]
+
+        print(" row of the word from dataframe",word_row)
+
+        for page_number in range(1,len(self.images_path)+1):
+
+            page_word_rows = word_row.loc[word_row["page_num"].isin([page_number])]
+
+            # page_number = word_row["page_num"]
+            _image = self.images_path[0].split("-")[0] +"-"+ str(page_number) + ".jpg"
+            self.word_boundingbox(_image,page_word_rows)
+        return word_row
+
+
+
+    def word_boundingbox(self , image_path, df_find):
+        im = Image.open(image_path)
+        draw = ImageDraw.Draw(im)
+
+
+        for index , row in df_find.iterrows():
+            vec_bb = [row['left'], row['top'], row['width']+row['left'], row['height']+row['top'] ]
+            print(vec_bb)
+
+            # fnt = ImageFont.load_default()
+
+            draw.rectangle(vec_bb,fill =None, outline ="red",width=4)
+        im.show()
+
+
+
+
 
 
 
     # def get_ocr_pdf(pdf_path):
 def main():
     doc_search_obj = document_searcher()
-    doc_search_obj.load_ocr("/media/saqib/VolumeD/Veeve/Dcube_stuff/Data/J2 Global-20220225T043505Z-001/esi.pdf")
+    df_pdf = doc_search_obj.load_ocr("/media/saqib/VolumeD/mywork/Django/Document_searcher/data/inputpdfs/HospitalMedicalReport.pdf")
+    doc_search_obj.find_word("Hospital",df_pdf)
 
 
 if __name__ == "__main__":
