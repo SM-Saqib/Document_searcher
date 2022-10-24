@@ -1,17 +1,33 @@
 from email.mime import image
 from PIL import Image
 import pytesseract
-from pytesseract import Output
+from pytesseract import 
 
 import os
 import pandas as pd
 
 class tesseract():
+  """returns a dataframe containing the full contents of the Tesseract object
+
+  Returns:
+      [type]: [description]
+  """
   def __init__(self):
+    """Initialize the object for the pdf .
+    """
     self.pdf_ocr_dict = {}
     self.full_ocr_df = pd.DataFrame()
 
   def get_ocr_single_image(self,image_path, get_bounding_box = False):
+    """Get OCR text from an image file .
+
+    Args:
+        image_path ([type]): [description]
+        get_bounding_box (bool, optional): [description]. Defaults to False.
+
+    Returns:
+        [type]: [description]
+    """    
     ## loading the image using PIL
     image = Image.open(image_path)
 
